@@ -163,8 +163,8 @@ const ProductManager: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+        <div className="flex flex-col md:grid md:grid-cols-4 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -201,7 +201,7 @@ const ProductManager: React.FC = () => {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {filteredProducts.map((product, index) => (
           <motion.div
             key={product.id}
@@ -228,7 +228,7 @@ const ProductManager: React.FC = () => {
             </div>
             
             <div className="p-4">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1 sm:gap-0">
                 <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
                   {product.category.replace('-', ' ')}
                 </span>
@@ -243,7 +243,7 @@ const ProductManager: React.FC = () => {
               <p className="text-gray-600 mb-2">{product.artist}</p>
               <p className="text-lg font-bold text-amber-600 mb-4">{product.price}</p>
               
-              <div className="flex space-x-2">
+              <div className="flex flex-col xs:flex-row gap-2 xs:space-x-2 w-full mt-2">
                 <button
                   onClick={() => handleEditProduct(product)}
                   className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 px-3 rounded-lg font-medium transition-colors flex items-center justify-center"
