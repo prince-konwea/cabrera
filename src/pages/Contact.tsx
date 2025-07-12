@@ -29,7 +29,7 @@ const Contact = () => {
     {
       icon: MapPin,
       title: "Gallery Location",
-      details: ["123 Gallery Street", "New York, NY 10001", "United States"]
+      details: ["1939 Azalea Ave", "Winter Park, FL 32789", "United States"]
     },
     {
       icon: Phone,
@@ -39,7 +39,7 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      details: ["info@galleryheritage.com", "curators@galleryheritage.com"]
+      details: ["info@cabreragems.com", "curators@cabreragems.com"]
     },
     {
       icon: Clock,
@@ -113,8 +113,8 @@ const Contact = () => {
                 <p className="text-gray-500">Interactive Map</p>
               </div>
               <p className="text-sm text-gray-600 mt-4">
-                Located in the heart of New York's gallery district, we're easily accessible 
-                by subway and offer nearby parking options.
+                Located in the beautiful city of Winter Park, Florida, we're easily accessible 
+                and offer convenient parking options.
               </p>
             </motion.div>
           </div>

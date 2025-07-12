@@ -1,6 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, Users, Globe, Clock } from 'lucide-react';
+import showroom from '../assets/showroom.jpeg';
+import showroom1 from '../assets/showroom1.jpeg';
+import showroom2 from '../assets/showroom2.jpeg';
 
 const About = () => {
   const timeline = [
@@ -40,25 +43,25 @@ const About = () => {
     {
       name: "Elena Cabrera",
       role: "Owner & Chief Curator",
-      image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300",
+      image: showroom1,
       bio: "With over 40 years of experience, Elena has curated exhibitions for major museums and private collectors worldwide."
     },
     {
       name: "Dr. James Morrison",
       role: "Head of Authentication",
-      image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300",
+      image: showroom2,
       bio: "Former curator at the Metropolitan Museum of Art, Dr. Morrison leads our authentication and provenance research team."
     },
     {
       name: "Sophie Chen",
       role: "Jewelry Specialist",
-      image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300",
+      image: showroom1,
       bio: "A gemologist with expertise in vintage and contemporary luxury jewelry, specializing in European and Asian pieces."
     },
     {
       name: "Isabella Cabrera III",
       role: "Business Development",
-      image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300",
+      image: showroom2,
       bio: "Third-generation family member focused on expanding our global reach and digital presence."
     }
   ];
@@ -127,7 +130,7 @@ const About = () => {
               className="relative"
             >
               <img
-                src="https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg?auto=compress&cs=tinysrgb&w=800"
+                src={showroom}
                 alt="Cabrera Gems & Artistry storefront"
                 className="w-full h-96 object-cover rounded-lg shadow-lg"
               />

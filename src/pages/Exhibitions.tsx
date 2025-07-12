@@ -242,7 +242,7 @@ const Exhibitions = () => {
               <div className="space-y-4">
                 <div className="flex items-center">
                   <MapPin className="w-5 h-5 text-amber-400 mr-3" />
-                  <span>123 Gallery Street, New York, NY 10001</span>
+                  <span>1939 Azalea Ave, Winter Park, FL 32789</span>
                 </div>
                 <div className="flex items-center">
                   <Clock className="w-5 h-5 text-amber-400 mr-3" />

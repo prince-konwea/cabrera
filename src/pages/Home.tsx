@@ -2,6 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Award, Shield, Truck, Clock } from 'lucide-react';
+import showroom1 from '../assets/showroom1.jpeg';
+import showroom2 from '../assets/showroom2.jpeg';
+import showroom3 from '../assets/showroom3.jpeg';
+import showroom4 from '../assets/showroom4.jpeg';
+import showroom from '../assets/showroom.jpeg';
+import photo1 from '../assets/photo1.jpeg';
+import antique1 from '../assets/antique (1).jpeg';
+import antique7 from '../assets/antique (7).jpeg';
+import antique13 from '../assets/antique (13).jpeg';
 
 const Home = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -153,7 +162,12 @@ const Home = () => {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category, index) => {
+            {[
+              { value: 'fine-art', label: 'Fine Art', image: photo1 },
+              { value: 'antiques', label: 'Antiques', image: antique1 },
+              { value: 'jewelry', label: 'Jewelry', image: antique7 },
+              { value: 'collectibles', label: 'Collectibles', image: antique13 }
+            ].map((category, index) => {
               const catProducts = products.filter(p => p.category === category.value);
               return (
                 <motion.div
@@ -168,7 +182,7 @@ const Home = () => {
                   >
                     <div className="aspect-w-3 aspect-h-4 relative">
                       <img
-                        src={catProducts[0]?.images[0] || '/placeholder-image.jpg'}
+                        src={category.image}
                         alt={category.label}
                         className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -182,6 +196,56 @@ const Home = () => {
                 </motion.div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Showroom Gallery */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Our Showroom</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Experience our elegant gallery space where masterpieces come to life
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { image: showroom1, title: "Main Gallery", description: "Our primary exhibition space" },
+              { image: showroom2, title: "Private Viewing Room", description: "Intimate settings for serious collectors" },
+              { image: showroom3, title: "Antiques Salon", description: "Dedicated space for antique pieces" },
+              { image: showroom4, title: "Jewelry Vault", description: "Secure display for precious jewelry" }
+            ].map((room, index) => (
+              <motion.div
+                key={room.title}
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="group cursor-pointer"
+              >
+                <div className="relative overflow-hidden rounded-lg bg-gray-100 mb-4">
+                  <img
+                    src={room.image}
+                    alt={room.title}
+                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <h3 className="text-lg font-serif font-bold mb-1">{room.title}</h3>
+                    <p className="text-sm opacity-90">{room.description}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Link 
+              to="/contact" 
+              className="inline-flex items-center bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors"
+            >
+              Schedule a Visit
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Link>
           </div>
         </div>
       </section>
