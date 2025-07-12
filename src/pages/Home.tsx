@@ -63,7 +63,7 @@ const Home = () => {
             transition={{ duration: 0.8 }}
             className="text-5xl md:text-7xl font-serif font-bold mb-6"
           >
-            Curating Excellence
+            Cabrera Gems & Artistry
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 30 }}
