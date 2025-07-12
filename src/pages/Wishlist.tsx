@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, Eye, ShoppingBag, X, ArrowLeft } from 'lucide-react';
+import ImageModal from '../components/ImageModal';
 
 const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState([
@@ -46,6 +47,15 @@ const Wishlist = () => {
       dateAdded: "2024-03-05"
     }
   ]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImage, setModalImage] = useState<string | null>(null);
+  const [modalAlt, setModalAlt] = useState<string | undefined>(undefined);
+
+  const handleImageClick = (image: string, alt?: string) => {
+    setModalImage(image);
+    setModalAlt(alt);
+    setModalOpen(true);
+  };
 
   const removeFromWishlist = (id: number) => {
     setWishlistItems(prev => prev.filter(item => item.id !== id));
@@ -85,6 +95,7 @@ const Wishlist = () => {
 
   return (
     <div className="min-h-screen bg-stone-50">
+      <ImageModal open={modalOpen} image={modalImage || ''} alt={modalAlt} onClose={() => setModalOpen(false)} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-serif font-bold text-gray-900 mb-2">Your Wishlist</h1>
@@ -104,7 +115,8 @@ const Wishlist = () => {
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500 cursor-zoom-in"
+                  onClick={() => handleImageClick(item.image, item.title)}
                 />
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute top-4 right-4 flex space-x-2">

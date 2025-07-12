@@ -19,7 +19,7 @@ const Insights = () => {
       id: 2,
       title: "Decoding the Mona Lisa's Smile",
       excerpt: "How Leonardo da Vinci's masterpiece continues to captivate and mystify viewers centuries after its creation.",
-      author: "Elena Heritage",
+      author: "Linda Cabrera",
       date: "March 10, 2024",
       readTime: "6 min read",
       image: "https://images.pexels.com/photos/1194775/pexels-photo-1194775.jpeg?auto=compress&cs=tinysrgb&w=800",
@@ -29,7 +29,7 @@ const Insights = () => {
       id: 3,
       title: "Van Gogh's Brushwork Techniques",
       excerpt: "Essential knowledge for collectors interested in understanding van Gogh's unique painting methods and style.",
-      author: "Sophie Chen",
+      author: "Khiara S.",
       date: "March 5, 2024",
       readTime: "10 min read",
       image: "https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg?auto=compress&cs=tinysrgb&w=800",
@@ -59,7 +59,7 @@ const Insights = () => {
       id: 6,
       title: "Renaissance Masters: A Collector's Guide",
       excerpt: "Essential advice for new collectors interested in Renaissance art and the works of masters like da Vinci.",
-      author: "Elena Heritage",
+      author: "Linda Cabrera",
       date: "February 15, 2024",
       readTime: "12 min read",
       image: "https://images.pexels.com/photos/1194775/pexels-photo-1194775.jpeg?auto=compress&cs=tinysrgb&w=800",
@@ -237,8 +237,8 @@ const Insights = () => {
                 <div className="space-y-4">
                   {[
                     { name: "Dr. James Morrison", role: "Head of Authentication", posts: 12 },
-                    { name: "Elena Heritage", role: "Owner & Chief Curator", posts: 8 },
-                    { name: "Sophie Chen", role: "Jewelry Specialist", posts: 6 }
+                    { name: "Linda Cabrera", role: "Chief Curator", posts: 8 },
+                    { name: "Khiara S.", role: "Jewelry Specialist", posts: 6 }
                   ].map((author, index) => (
                     <motion.div
                       key={author.name}

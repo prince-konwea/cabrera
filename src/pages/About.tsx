@@ -4,6 +4,8 @@ import { Award, Users, Globe, Clock } from 'lucide-react';
 import showroom from '../assets/showroom.jpeg';
 import showroom1 from '../assets/showroom1.jpeg';
 import showroom2 from '../assets/showroom2.jpeg';
+import khiara from '../assets/khiara.jpeg';
+import jCarvey from '../assets/J.carvey Cabrera.jpeg';
 
 const About = () => {
   const timeline = [
@@ -20,7 +22,7 @@ const About = () => {
     {
       year: "1985",
       title: "Second Generation",
-      description: "Isabella's daughter, Elena Cabrera, joined the gallery, bringing expertise in contemporary art and luxury jewelry design."
+      description: "Isabella's daughter, Linda Cabrera, joined the gallery, bringing expertise in contemporary art and luxury jewelry design."
     },
     {
       year: "2010",
@@ -41,27 +43,21 @@ const About = () => {
 
   const team = [
     {
-      name: "Elena Cabrera",
-      role: "Owner & Chief Curator",
+      name: "Linda Cabrera",
+      role: "Chief Curator",
       image: showroom1,
-      bio: "With over 40 years of experience, Elena has curated exhibitions for major museums and private collectors worldwide."
+      bio: "With over 40 years of experience, Linda has curated exhibitions for major museums and private collectors worldwide."
     },
     {
-      name: "Dr. James Morrison",
-      role: "Head of Authentication",
-      image: showroom2,
-      bio: "Former curator at the Metropolitan Museum of Art, Dr. Morrison leads our authentication and provenance research team."
-    },
-    {
-      name: "Sophie Chen",
+      name: "Khiara S.",
       role: "Jewelry Specialist",
-      image: showroom1,
+      image: khiara,
       bio: "A gemologist with expertise in vintage and contemporary luxury jewelry, specializing in European and Asian pieces."
     },
     {
-      name: "Isabella Cabrera III",
+      name: "J. Carvey Cabrera",
       role: "Business Development",
-      image: showroom2,
+      image: jCarvey,
       bio: "Third-generation family member focused on expanding our global reach and digital presence."
     }
   ];

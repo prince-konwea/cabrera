@@ -36,6 +36,7 @@ import antique28 from '../assets/antique (28).jpeg';
 import antique29 from '../assets/antique (29).jpeg';
 import antique30 from '../assets/antique (30).jpeg';
 import antique31 from '../assets/antique (31).jpeg';
+import ImageModal from '../components/ImageModal';
 
 const Category = () => {
   const { category } = useParams();
@@ -45,6 +46,9 @@ const Category = () => {
     era: 'all',
     style: 'all'
   });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImage, setModalImage] = useState<string | null>(null);
+  const [modalAlt, setModalAlt] = useState<string | undefined>(undefined);
 
   const categoryData = {
     'fine-art': {
@@ -328,6 +332,12 @@ const Category = () => {
     return <div>Category not found</div>;
   }
 
+  const handleImageClick = (image: string, alt?: string) => {
+    setModalImage(image);
+    setModalAlt(alt);
+    setModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Header */}
@@ -452,7 +462,8 @@ const Category = () => {
                       <img
                         src={product.image}
                         alt={product.title}
-                        className={`object-cover group-hover:scale-105 transition-transform duration-500 ${
+                        onClick={() => handleImageClick(product.image, product.title)}
+                        className={`object-cover group-hover:scale-105 transition-transform duration-500 cursor-zoom-in ${
                           viewMode === 'list' ? 'w-full h-48' : 'w-full h-64'
                         }`}
                       />
@@ -496,6 +507,7 @@ const Category = () => {
           </div>
         </div>
       </div>
+      <ImageModal open={modalOpen} image={modalImage || ''} alt={modalAlt} onClose={() => setModalOpen(false)} />
     </div>
   );
 };

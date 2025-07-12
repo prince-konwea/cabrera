@@ -11,9 +11,20 @@ import photo1 from '../assets/photo1.jpeg';
 import antique1 from '../assets/antique (1).jpeg';
 import antique7 from '../assets/antique (7).jpeg';
 import antique13 from '../assets/antique (13).jpeg';
+import ImageModal from '../components/ImageModal';
 
 const Home = () => {
   const [products, setProducts] = useState<any[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImage, setModalImage] = useState<string | null>(null);
+  const [modalAlt, setModalAlt] = useState<string | undefined>(undefined);
+
+  const handleImageClick = (image: string, alt?: string, e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    setModalImage(image);
+    setModalAlt(alt);
+    setModalOpen(true);
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem('products');
@@ -56,6 +67,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
+      <ImageModal open={modalOpen} image={modalImage || ''} alt={modalAlt} onClose={() => setModalOpen(false)} />
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30 z-10" />
@@ -131,7 +143,8 @@ const Home = () => {
                       <img
                         src={item.images[0] || '/placeholder-image.jpg'}
                         alt={item.title}
-                        className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500 cursor-zoom-in"
+                        onClick={e => handleImageClick(item.images[0] || '/placeholder-image.jpg', item.title, e)}
                       />
                       <div className="absolute top-4 left-4 bg-amber-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                         {categories.find(c => c.value === item.category)?.label || item.category}
@@ -184,7 +197,8 @@ const Home = () => {
                       <img
                         src={category.image}
                         alt={category.label}
-                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500 cursor-zoom-in"
+                        onClick={e => handleImageClick(category.image, category.label, e)}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     </div>
