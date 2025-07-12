@@ -23,9 +23,12 @@ const Header = () => {
   return (
     <header className="bg-white/95 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 min-w-0">
+        <div className="flex items-center h-20">
+          {/* Left spacer for mobile centering */}
+          <div className="flex-1 lg:hidden" />
+          
+          {/* Logo - centered on mobile, left on desktop */}
+          <Link to="/" className="flex items-center space-x-2 min-w-0 lg:flex-1">
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-600 to-amber-800 rounded-full flex items-center justify-center flex-shrink-0">
               <Crown className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
             </div>
@@ -38,7 +41,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-8">
+          <nav className="hidden lg:flex space-x-8 flex-1 justify-center">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -60,8 +63,8 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Actions */}
-          <div className="flex items-center space-x-4">
+          {/* Actions - right side */}
+          <div className="flex items-center space-x-4 flex-1 justify-end">
             <button className="p-2 text-gray-700 hover:text-amber-600 transition-colors">
               <Search className="w-5 h-5" />
             </button>

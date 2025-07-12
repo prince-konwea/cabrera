@@ -36,7 +36,11 @@ export const resizeImage = (file: File, maxWidth: number = 1920, quality: number
       canvas.height = img.height * ratio;
 
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(resolve, file.type, quality);
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob);
+        }
+      }, file.type, quality);
     };
 
     img.src = URL.createObjectURL(file);
@@ -86,14 +90,36 @@ export const uploadToServer = async (file: File): Promise<UploadedImage> => {
 
 // Cloud storage configuration examples
 export const cloudinaryConfig = {
-  cloudName: 'your-cloud-name',
-  uploadPreset: 'your-upload-preset',
+  cloudName: 'dneycg7mk',
+  uploadPreset: 'cabrera_photos',
   folder: 'cabrera-gallery'
 };
 
-export const awsS3Config = {
-  bucket: 'cabrera-gallery-images',
-  region: 'us-east-1',
-  accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+export const uploadToCloudinary = async (file: File, category: string): Promise<UploadedImage & { category: string }> => {
+  const url = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/upload`;
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', cloudinaryConfig.uploadPreset);
+  formData.append('folder', `${cloudinaryConfig.folder}/${category}`);
+
+  const response = await fetch(url, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to upload image to Cloudinary');
+  }
+
+  const data = await response.json();
+
+  return {
+    id: data.asset_id || data.public_id,
+    url: data.secure_url,
+    filename: data.original_filename,
+    size: file.size,
+    type: file.type,
+    uploadedAt: new Date().toISOString(),
+    category
+  };
 };

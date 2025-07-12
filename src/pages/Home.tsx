@@ -1,62 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Award, Shield, Truck, Clock } from 'lucide-react';
 
 const Home = () => {
-  const featuredItems = [
-    {
-      id: 1,
-      title: "The Starry Night Study",
-      artist: "Vincent van Gogh",
-      price: "Request Price",
-      image: "https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg?auto=compress&cs=tinysrgb&w=800",
-      category: "Fine Art"
-    },
-    {
-      id: 2,
-      title: "Mona Lisa Study",
-      artist: "Leonardo da Vinci",
-      price: "$485,000",
-      image: "https://images.pexels.com/photos/1194775/pexels-photo-1194775.jpeg?auto=compress&cs=tinysrgb&w=800",
-      category: "Fine Art"
-    },
-    {
-      id: 3,
-      title: "The Starry Night Study II",
-      artist: "Vincent van Gogh",
-      price: "$125,000",
-      image: "https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg?auto=compress&cs=tinysrgb&w=800",
-      category: "Fine Art"
-    }
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('products');
+    if (stored) setProducts(JSON.parse(stored));
+  }, []);
+
+  // Group products by category
+  const categories = [
+    { value: 'fine-art', label: 'Fine Art' },
+    { value: 'antiques', label: 'Antiques' },
+    { value: 'jewelry', label: 'Jewelry' },
+    { value: 'collectibles', label: 'Collectibles' }
   ];
 
-  const categories = [
-    {
-      name: "Fine Art",
-      href: "/category/fine-art",
-      image: "https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg?auto=compress&cs=tinysrgb&w=800",
-      description: "Masterpieces by renowned artists"
-    },
-    {
-      name: "Antiques",
-      href: "/category/antiques",
-      image: "https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg?auto=compress&cs=tinysrgb&w=800",
-      description: "Rare historical treasures"
-    },
-    {
-      name: "Jewelry",
-      href: "/category/jewelry",
-      image: "https://images.pexels.com/photos/1454428/pexels-photo-1454428.jpeg?auto=compress&cs=tinysrgb&w=800",
-      description: "Exquisite luxury pieces"
-    },
-    {
-      name: "Collectibles",
-      href: "/category/collectibles",
-      image: "https://images.pexels.com/photos/1194775/pexels-photo-1194775.jpeg?auto=compress&cs=tinysrgb&w=800",
-      description: "Unique and rare finds"
-    }
-  ];
+  // Featured: show up to 6 most recent products
+  const featuredItems = products.slice(0, 6);
 
   const trustSignals = [
     {
@@ -141,37 +105,40 @@ const Home = () => {
               Handpicked exceptional pieces from our current collection
             </p>
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredItems.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group cursor-pointer"
-              >
-                <Link to={`/product/${item.id}`}>
-                  <div className="relative overflow-hidden rounded-lg bg-gray-100 mb-4">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-4 left-4 bg-amber-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {item.category}
+            {featuredItems.length === 0 ? (
+              <p className="col-span-full text-center text-gray-500">No products available yet.</p>
+            ) : (
+              featuredItems.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="group cursor-pointer"
+                >
+                  <Link to={`/product/${item.id}`}>
+                    <div className="relative overflow-hidden rounded-lg bg-gray-100 mb-4">
+                      <img
+                        src={item.images[0] || '/placeholder-image.jpg'}
+                        alt={item.title}
+                        className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-4 left-4 bg-amber-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        {categories.find(c => c.value === item.category)?.label || item.category}
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-serif font-bold text-gray-900 group-hover:text-amber-600 transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-600">{item.artist}</p>
-                    <p className="text-2xl font-bold text-amber-600">{item.price}</p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-serif font-bold text-gray-900 group-hover:text-amber-600 transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-600">{item.artist}</p>
+                      <p className="text-2xl font-bold text-amber-600">{item.price}</p>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -185,34 +152,36 @@ const Home = () => {
               Explore our carefully curated collections
             </p>
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category, index) => (
-              <motion.div
-                key={category.name}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Link 
-                  to={category.href}
-                  className="group block relative overflow-hidden rounded-lg bg-white shadow-lg hover:shadow-xl transition-shadow duration-300"
+            {categories.map((category, index) => {
+              const catProducts = products.filter(p => p.category === category.value);
+              return (
+                <motion.div
+                  key={category.value}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
-                  <div className="aspect-w-3 aspect-h-4 relative">
-                    <img
-                      src={category.image}
-                      alt={category.name}
-                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h3 className="text-2xl font-serif font-bold mb-2">{category.name}</h3>
-                    <p className="text-sm opacity-90">{category.description}</p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  <Link 
+                    to={`/category/${category.value}`}
+                    className="group block relative overflow-hidden rounded-lg bg-white shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  >
+                    <div className="aspect-w-3 aspect-h-4 relative">
+                      <img
+                        src={catProducts[0]?.images[0] || '/placeholder-image.jpg'}
+                        alt={category.label}
+                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <h3 className="text-2xl font-serif font-bold mb-2">{category.label}</h3>
+                      <p className="text-sm opacity-90">{catProducts.length} item(s) in this category</p>
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Edit, Trash2, Eye, Search, Filter } from 'lucide-react';
 import ProductForm from './ProductForm';
@@ -25,48 +25,18 @@ interface Product {
 }
 
 const ProductManager: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: '1',
-      title: 'The Starry Night Study',
-      artist: 'Vincent van Gogh',
-      year: '1889',
-      price: '$850,000',
-      priceType: 'fixed',
-      category: 'fine-art',
-      medium: 'Oil on Canvas',
-      dimensions: '73 x 92 cm',
-      condition: 'excellent',
-      description: 'A remarkable study of van Gogh\'s most famous work...',
-      provenance: 'Private Collection, Netherlands...',
-      exhibition: 'Post-Impressionist Exhibition, London, 1910...',
-      literature: 'De la Faille, Vincent van Gogh: Catalogue Raisonné...',
-      images: ['https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg?auto=compress&cs=tinysrgb&w=400'],
-      status: 'active',
-      createdAt: '2024-03-15',
-      updatedAt: '2024-03-15'
-    },
-    {
-      id: '2',
-      title: 'Mona Lisa Study',
-      artist: 'Leonardo da Vinci',
-      year: '1503',
-      price: 'Request Price',
-      priceType: 'request',
-      category: 'fine-art',
-      medium: 'Oil on Poplar',
-      dimensions: '77 x 53 cm',
-      condition: 'excellent',
-      description: 'An exceptional study of da Vinci\'s masterpiece...',
-      provenance: 'Royal Collection, France...',
-      exhibition: 'Renaissance Masters, Louvre, 1920...',
-      literature: 'Zöllner, Leonardo da Vinci: Complete Paintings...',
-      images: ['https://images.pexels.com/photos/1194775/pexels-photo-1194775.jpeg?auto=compress&cs=tinysrgb&w=400'],
-      status: 'active',
-      createdAt: '2024-03-10',
-      updatedAt: '2024-03-10'
-    }
-  ]);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  // Load products from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('products');
+    if (stored) setProducts(JSON.parse(stored));
+  }, []);
+
+  // Save products to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('products', JSON.stringify(products));
+  }, [products]);
 
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | undefined>();

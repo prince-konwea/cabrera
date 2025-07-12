@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Save, X } from 'lucide-react';
 import ImageUpload from './ImageUpload';
+import { uploadToCloudinary } from '../../utils/imageUpload';
 
 interface Product {
   id?: string;
@@ -46,18 +47,27 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
   });
 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUpload = (files: File[]) => {
-    setUploadedFiles(files);
-    // In a real app, you'd upload these to your server/cloud storage
-    // For now, we'll create object URLs for preview
-    const imageUrls = files.map(file => URL.createObjectURL(file));
-    setFormData(prev => ({ ...prev, images: imageUrls }));
+  const handleImageUpload = async (files: File[]) => {
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const uploaded = await Promise.all(
+        files.map(file => uploadToCloudinary(file, formData.category))
+      );
+      setFormData(prev => ({ ...prev, images: uploaded.map(img => img.url) }));
+    } catch (err) {
+      setUploadError('Failed to upload one or more images.');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -305,6 +315,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
             Product Images *
           </label>
           <ImageUpload onImageUpload={handleImageUpload} />
+          {uploading && <p className="text-amber-600 mt-2">Uploading images...</p>}
+          {uploadError && <p className="text-red-600 mt-2">{uploadError}</p>}
+          {formData.images.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+              {formData.images.map((url, idx) => (
+                <img key={idx} src={url} alt={`Uploaded ${idx + 1}`} className="w-full h-24 object-cover rounded" />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Form Actions */}
@@ -313,12 +332,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
             type="button"
             onClick={onCancel}
             className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold transition-colors"
+            disabled={uploading}
           >
             Cancel
           </button>
           <button
             type="submit"
             className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition-colors flex items-center"
+            disabled={uploading}
           >
             <Save className="w-5 h-5 mr-2" />
             {product ? 'Update Product' : 'Save Product'}
