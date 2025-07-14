@@ -70,6 +70,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
     }
   };
 
+  const handleRemoveImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
@@ -320,7 +327,17 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
           {formData.images.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
               {formData.images.map((url, idx) => (
-                <img key={idx} src={url} alt={`Uploaded ${idx + 1}`} className="w-full h-24 object-cover rounded" />
+                <div key={idx} className="relative group">
+                  <img src={url} alt={`Uploaded ${idx + 1}`} className="w-full h-24 object-cover rounded" />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(idx)}
+                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Remove image"
+                  >
+                    ×
+                  </button>
+                </div>
               ))}
             </div>
           )}

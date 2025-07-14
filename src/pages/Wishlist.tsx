@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, Eye, ShoppingBag, X, ArrowLeft } from 'lucide-react';
 import ImageModal from '../components/ImageModal';
+import ImageWithFallback from '../components/ImageWithFallback';
 
 const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState([
@@ -112,10 +113,11 @@ const Wishlist = () => {
               className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300"
             >
               <div className="relative group">
-                <img
+                <ImageWithFallback
                   src={item.image}
                   alt={item.title}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500 cursor-zoom-in"
+                  fallbackText={`${item.title} - ${item.artist}`}
                   onClick={() => handleImageClick(item.image, item.title)}
                 />
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

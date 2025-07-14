@@ -4,40 +4,31 @@ import { Award, Users, Globe, Clock } from 'lucide-react';
 import showroom from '../assets/showroom.jpeg';
 import showroom1 from '../assets/showroom1.jpeg';
 import showroom2 from '../assets/showroom2.jpeg';
+import showroom3 from '../assets/showroom3.jpeg';
 import khiara from '../assets/khiara.jpeg';
 import jCarvey from '../assets/J.carvey Cabrera.jpeg';
 
 const About = () => {
   const timeline = [
     {
-      year: "1952",
+      year: "2021",
       title: "Foundation",
       description: "Cabrera Gems & Artistry was established by Isabella Cabrera in New York City, beginning with a focus on European fine art and precious gems."
     },
     {
-      year: "1967",
+      year: "2022",
       title: "Expansion",
       description: "Added antiques and decorative arts to our collection, establishing relationships with European estates and auction houses."
     },
     {
-      year: "1985",
-      title: "Second Generation",
-      description: "Isabella's daughter, Linda Cabrera, joined the gallery, bringing expertise in contemporary art and luxury jewelry design."
-    },
-    {
-      year: "2010",
-      title: "Global Reach",
-      description: "Expanded internationally with partnerships in London, Paris, and Hong Kong, becoming a global destination for collectors."
-    },
-    {
-      year: "2020",
+      year: "2023",
       title: "Digital Innovation",
-      description: "Launched our digital platform, bringing our curated collection to collectors worldwide during the pandemic."
+      description: "Launched our digital platform, bringing our curated collection to collectors worldwide and expanding our global reach."
     },
     {
       year: "2024",
       title: "Modern Era",
-      description: "Today, we continue to set standards in authentication, curation, and collector services under the Cabrera family's third-generation leadership."
+      description: "Today, we continue to set standards in authentication, curation, and collector services under the Cabrera family's leadership."
     }
   ];
 
@@ -46,7 +37,7 @@ const About = () => {
       name: "Linda Cabrera",
       role: "Chief Curator",
       image: showroom1,
-      bio: "With over 40 years of experience, Linda has curated exhibitions for major museums and private collectors worldwide."
+      bio: "With extensive experience in fine art and antiques, Linda has curated exhibitions for major museums and private collectors worldwide."
     },
     {
       name: "Khiara S.",
@@ -81,7 +72,7 @@ const About = () => {
     {
       icon: Clock,
       title: "Legacy",
-      description: "Three generations of the Cabrera family have built a reputation for integrity and excellence in the art world."
+      description: "The Cabrera family has built a reputation for integrity and excellence in the art world."
     }
   ];
 
@@ -100,13 +91,13 @@ const About = () => {
                 Three Generations of Excellence
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Since 1952, Cabrera Gems & Artistry has been a trusted name in fine art, antiques, and luxury jewelry. 
+                Since 2021, Cabrera Gems & Artistry has been a trusted name in fine art, antiques, and luxury jewelry. 
                 Our family-owned gallery has built lasting relationships with collectors, museums, and connoisseurs 
                 worldwide, maintaining the highest standards of authenticity and expertise.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="text-center sm:text-left">
-                  <div className="text-3xl font-bold text-amber-600">75+</div>
+                  <div className="text-3xl font-bold text-amber-600">3+</div>
                   <div className="text-gray-600">Years of Experience</div>
                 </div>
                 <div className="text-center sm:text-left">
@@ -126,7 +117,7 @@ const About = () => {
               className="relative"
             >
               <img
-                src={showroom}
+                src={showroom3}
                 alt="Cabrera Gems & Artistry storefront"
                 className="w-full h-96 object-cover rounded-lg shadow-lg"
               />
@@ -172,7 +163,7 @@ const About = () => {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Our Journey</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Seven decades of growth, innovation, and dedication to the arts
+              Three years of growth, innovation, and dedication to the arts
             </p>
           </div>
           

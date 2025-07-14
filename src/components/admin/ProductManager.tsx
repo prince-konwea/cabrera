@@ -78,6 +78,16 @@ const ProductManager: React.FC = () => {
     }
   };
 
+  const handleDeleteImage = (productId: string, imageIdx: number) => {
+    setProducts(prev => prev.map(product => {
+      if (product.id === productId) {
+        const newImages = product.images.filter((_, idx) => idx !== imageIdx);
+        return { ...product, images: newImages, updatedAt: new Date().toISOString().split('T')[0] };
+      }
+      return product;
+    }));
+  };
+
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.artist.toLowerCase().includes(searchTerm.toLowerCase());
@@ -180,21 +190,29 @@ const ProductManager: React.FC = () => {
             transition={{ duration: 0.4, delay: index * 0.1 }}
             className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
           >
-            <div className="relative">
-              <img
-                src={product.images[0] || '/placeholder-image.jpg'}
-                alt={product.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute top-2 right-2 flex space-x-1">
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                  product.status === 'active' ? 'bg-green-100 text-green-800' :
-                  product.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {product.status}
-                </span>
-              </div>
+            {/* Show all images with delete buttons */}
+            <div className="relative grid grid-cols-2 gap-1 p-2 bg-gray-50">
+              {product.images && product.images.length > 0 ? (
+                product.images.map((img, imgIdx) => (
+                  <div key={imgIdx} className="relative group">
+                    <img
+                      src={img}
+                      alt={product.title + ' image ' + (imgIdx + 1)}
+                      className="w-full h-24 object-cover rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteImage(product.id, imgIdx)}
+                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      title="Delete image"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-2 text-gray-400 text-center py-4">No images</div>
+              )}
             </div>
             
             <div className="p-4">

@@ -123,3 +123,5 @@ export const uploadToCloudinary = async (file: File, category: string): Promise<
     category
   };
 };
+
+// In browser console:

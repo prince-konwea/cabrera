@@ -12,6 +12,7 @@ import antique1 from '../assets/antique (1).jpeg';
 import antique7 from '../assets/antique (7).jpeg';
 import antique13 from '../assets/antique (13).jpeg';
 import ImageModal from '../components/ImageModal';
+import ImageWithFallback from '../components/ImageWithFallback';
 
 const Home = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -69,7 +70,7 @@ const Home = () => {
     <div className="min-h-screen">
       <ImageModal open={modalOpen} image={modalImage || ''} alt={modalAlt} onClose={() => setModalOpen(false)} />
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative h-[60vh] sm:h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30 z-10" />
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -82,7 +83,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-serif font-bold mb-6"
+            className="text-3xl sm:text-5xl md:text-7xl font-serif font-bold mb-6"
           >
             Cabrera Gems & Artistry
           </motion.h1>
@@ -90,7 +91,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl mb-8 font-light"
+            className="text-lg sm:text-xl md:text-2xl mb-8 font-light"
           >
             Discover extraordinary fine art, antiques, and jewelry from around the world
           </motion.p>
@@ -118,15 +119,15 @@ const Home = () => {
       </section>
 
       {/* Featured Items */}
-      <section className="py-20 bg-white">
+      <section className="py-12 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Featured Masterpieces</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-gray-900 mb-4">Featured Masterpieces</h2>
+            <p className="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto">
               Handpicked exceptional pieces from our current collection
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {featuredItems.length === 0 ? (
               <p className="col-span-full text-center text-gray-500">No products available yet.</p>
             ) : (
@@ -139,23 +140,29 @@ const Home = () => {
                   className="group cursor-pointer"
                 >
                   <Link to={`/product/${item.id}`}>
-                    <div className="relative overflow-hidden rounded-lg bg-gray-100 mb-4">
-                      <img
-                        src={item.images[0] || '/placeholder-image.jpg'}
+                    <div
+                      onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+                        e.preventDefault();
+                        handleImageClick(item.images?.[0] || photo1, item.title, e);
+                      }}
+                      className="relative overflow-hidden rounded-lg bg-gray-100 mb-4 cursor-zoom-in"
+                    >
+                      <ImageWithFallback
+                        src={item.images?.[0] || photo1}
                         alt={item.title}
-                        className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500 cursor-zoom-in"
-                        onClick={e => handleImageClick(item.images[0] || '/placeholder-image.jpg', item.title, e)}
+                        className="w-full h-56 sm:h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+                        fallbackText={`${item.category || 'Product'} Image`}
                       />
-                      <div className="absolute top-4 left-4 bg-amber-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                      <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-amber-600 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
                         {categories.find(c => c.value === item.category)?.label || item.category}
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <h3 className="text-xl font-serif font-bold text-gray-900 group-hover:text-amber-600 transition-colors">
+                      <h3 className="text-lg sm:text-xl font-serif font-bold text-gray-900 group-hover:text-amber-600 transition-colors">
                         {item.title}
                       </h3>
                       <p className="text-gray-600">{item.artist}</p>
-                      <p className="text-2xl font-bold text-amber-600">{item.price}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-amber-600">{item.price}</p>
                     </div>
                   </Link>
                 </motion.div>
@@ -166,15 +173,15 @@ const Home = () => {
       </section>
 
       {/* Categories */}
-      <section className="py-20 bg-stone-50">
+      <section className="py-12 sm:py-20 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Shop by Category</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-gray-900 mb-4">Shop by Category</h2>
+            <p className="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto">
               Explore our carefully curated collections
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               { value: 'fine-art', label: 'Fine Art', image: photo1 },
               { value: 'antiques', label: 'Antiques', image: antique1 },
@@ -194,17 +201,25 @@ const Home = () => {
                     className="group block relative overflow-hidden rounded-lg bg-white shadow-lg hover:shadow-xl transition-shadow duration-300"
                   >
                     <div className="aspect-w-3 aspect-h-4 relative">
-                      <img
-                        src={category.image}
-                        alt={category.label}
-                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500 cursor-zoom-in"
-                        onClick={e => handleImageClick(category.image, category.label, e)}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      <div
+                        onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+                          e.preventDefault();
+                          handleImageClick(category.image, category.label, e);
+                        }}
+                        className="aspect-w-3 aspect-h-4 relative cursor-zoom-in"
+                      >
+                        <ImageWithFallback
+                          src={category.image}
+                          alt={category.label}
+                          className="w-full h-48 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                          fallbackText={`${category.label} Category`}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      </div>
                     </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                      <h3 className="text-2xl font-serif font-bold mb-2">{category.label}</h3>
-                      <p className="text-sm opacity-90">{catProducts.length} item(s) in this category</p>
+                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white">
+                      <h3 className="text-lg sm:text-2xl font-serif font-bold mb-2">{category.label}</h3>
+                      <p className="text-xs sm:text-sm opacity-90">{catProducts.length} item(s) in this category</p>
                     </div>
                   </Link>
                 </motion.div>
@@ -215,15 +230,15 @@ const Home = () => {
       </section>
 
       {/* Showroom Gallery */}
-      <section className="py-20 bg-white">
+      <section className="py-12 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif font-bold text-gray-900 mb-4">Our Showroom</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-gray-900 mb-4">Our Showroom</h2>
+            <p className="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto">
               Experience our elegant gallery space where masterpieces come to life
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               { image: showroom1, title: "Main Gallery", description: "Our primary exhibition space" },
               { image: showroom2, title: "Private Viewing Room", description: "Intimate settings for serious collectors" },
@@ -241,13 +256,12 @@ const Home = () => {
                   <img
                     src={room.image}
                     alt={room.title}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-40 sm:h-56 lg:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <h3 className="text-lg font-serif font-bold mb-1">{room.title}</h3>
-                    <p className="text-sm opacity-90">{room.description}</p>
-                  </div>
+                </div>
+                <div className="space-y-2 text-center">
+                  <h3 className="text-lg sm:text-xl font-serif font-bold text-gray-900 mb-1">{room.title}</h3>
+                  <p className="text-gray-600 text-sm sm:text-base">{room.description}</p>
                 </div>
               </motion.div>
             ))}
