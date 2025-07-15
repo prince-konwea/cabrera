@@ -1,100 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Edit, Trash2, Eye, Search, Filter } from 'lucide-react';
 import ProductForm from './ProductForm';
-
-interface Product {
-  id: string;
-  title: string;
-  artist: string;
-  year: string;
-  price: string;
-  priceType: 'fixed' | 'request';
-  category: string;
-  medium: string;
-  dimensions: string;
-  condition: string;
-  description: string;
-  provenance: string;
-  exhibition: string;
-  literature: string;
-  images: string[];
-  status: 'active' | 'draft' | 'sold';
-  createdAt: string;
-  updatedAt: string;
-}
+import { api, updateProduct, deleteProduct } from '../../utils/imageApi';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProductManager: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-
-  // Load products from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem('products');
-    if (stored) setProducts(JSON.parse(stored));
-  }, []);
-
-  // Save products to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('products', JSON.stringify(products));
-  }, [products]);
-
+  const [products, setProducts] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | undefined>();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [editingProduct, setEditingProduct] = useState<any | undefined>();
   const [filterCategory, setFilterCategory] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSaveProduct = (productData: any) => {
-    if (editingProduct) {
-      // Update existing product
-      setProducts(prev => prev.map(p => 
-        p.id === editingProduct.id 
-          ? { ...productData, id: editingProduct.id, updatedAt: new Date().toISOString().split('T')[0] }
-          : p
-      ));
-    } else {
-      // Add new product
-      const newProduct: Product = {
-        ...productData,
-        id: Date.now().toString(),
-        status: 'active' as const,
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0]
-      };
-      setProducts(prev => [newProduct, ...prev]);
+  const fetchProducts = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get('/products');
+      setProducts(response.data);
+    } catch (err) {
+      setError('Failed to load products.');
+    } finally {
+      setLoading(false);
     }
-    setShowForm(false);
-    setEditingProduct(undefined);
   };
 
-  const handleEditProduct = (product: Product) => {
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const handleEditProduct = (product: any) => {
     setEditingProduct(product);
     setShowForm(true);
   };
 
-  const handleDeleteProduct = (id: string) => {
-    if (confirm('Are you sure you want to delete this product?')) {
-      setProducts(prev => prev.filter(p => p.id !== id));
+  const handleDeleteProduct = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        await deleteProduct(id);
+        toast.success('Product deleted successfully!');
+        setProducts(products.filter((p) => p._id !== id));
+      } catch {
+        toast.error('Failed to delete product.');
+      }
     }
   };
 
-  const handleDeleteImage = (productId: string, imageIdx: number) => {
-    setProducts(prev => prev.map(product => {
-      if (product.id === productId) {
-        const newImages = product.images.filter((_, idx) => idx !== imageIdx);
-        return { ...product, images: newImages, updatedAt: new Date().toISOString().split('T')[0] };
+  const handleSaveProduct = async (formData: any) => {
+    if (editingProduct) {
+      // Update existing product
+      try {
+        await updateProduct(editingProduct._id, {
+          title: formData.title,
+          description: formData.description,
+          imageUrls: formData.imageUrls || formData.images || [],
+          category: formData.category,
+          price: Number(formData.price),
+        });
+        toast.success('Product updated successfully!');
+        setShowForm(false);
+        setEditingProduct(undefined);
+        fetchProducts();
+      } catch {
+        toast.error('Failed to update product.');
       }
-      return product;
-    }));
+    } else {
+      // New product is handled in ProductForm
+      setShowForm(false);
+      setEditingProduct(undefined);
+      fetchProducts();
+    }
   };
 
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.artist.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === 'all' || product.category === filterCategory;
-    const matchesStatus = filterStatus === 'all' || product.status === filterStatus;
-    
-    return matchesSearch && matchesCategory && matchesStatus;
+    return matchesCategory;
   });
 
   const categories = [
@@ -105,56 +87,37 @@ const ProductManager: React.FC = () => {
     { value: 'collectibles', label: 'Collectibles' }
   ];
 
-  const statuses = [
-    { value: 'all', label: 'All Status' },
-    { value: 'active', label: 'Active' },
-    { value: 'draft', label: 'Draft' },
-    { value: 'sold', label: 'Sold' }
-  ];
-
   if (showForm) {
     return (
       <ProductForm
-        product={editingProduct}
         onSave={handleSaveProduct}
         onCancel={() => {
           setShowForm(false);
           setEditingProduct(undefined);
         }}
+        product={editingProduct}
       />
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-serif font-bold text-gray-900">Product Management</h1>
           <p className="text-gray-600">Manage your art collection and inventory</p>
         </div>
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => { setShowForm(true); setEditingProduct(undefined); }}
           className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center"
         >
           <Plus className="w-5 h-5 mr-2" />
           Add New Product
         </button>
       </div>
-
-      {/* Filters */}
       <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
         <div className="flex flex-col md:grid md:grid-cols-4 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-            />
-          </div>
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
@@ -164,103 +127,59 @@ const ProductManager: React.FC = () => {
               <option key={cat.value} value={cat.value}>{cat.label}</option>
             ))}
           </select>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-          >
-            {statuses.map(status => (
-              <option key={status.value} value={status.value}>{status.label}</option>
-            ))}
-          </select>
-          <div className="text-sm text-gray-600 flex items-center">
-            <Filter className="w-4 h-4 mr-2" />
-            {filteredProducts.length} of {products.length} products
-          </div>
         </div>
       </div>
-
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {filteredProducts.map((product, index) => (
-          <motion.div
-            key={product.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-            className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
-          >
-            {/* Show all images with delete buttons */}
-            <div className="relative grid grid-cols-2 gap-1 p-2 bg-gray-50">
-              {product.images && product.images.length > 0 ? (
-                product.images.map((img, imgIdx) => (
-                  <div key={imgIdx} className="relative group">
-                    <img
-                      src={img}
-                      alt={product.title + ' image ' + (imgIdx + 1)}
-                      className="w-full h-24 object-cover rounded"
-                    />
+      {loading ? (
+        <div className="text-center text-gray-500 text-xl py-24">Loading...</div>
+      ) : error ? (
+        <div className="text-center text-red-600 text-xl py-24">{error}</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {filteredProducts.map((product, index) => (
+            <motion.div
+              key={product._id || product.id || index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
+            >
+              <div className="relative grid grid-cols-1 gap-1 p-2 bg-gray-50">
+                <img
+                  src={product.imageUrls?.[0]}
+                  alt={product.title}
+                  className="w-full h-32 object-cover rounded mb-2"
+                />
+                <div className="p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1 sm:gap-0">
+                    <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
+                      {product.category}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-serif font-bold text-gray-900 mb-1">
+                    {product.title}
+                  </h3>
+                  <p className="text-gray-600 mb-2">{product.description}</p>
+                  <p className="text-lg font-bold text-amber-600 mb-4">${product.price}</p>
+                  <div className="flex gap-2 mt-2">
                     <button
-                      type="button"
-                      onClick={() => handleDeleteImage(product.id, imgIdx)}
-                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                      title="Delete image"
+                      onClick={() => handleEditProduct(product)}
+                      className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 px-3 rounded-lg font-medium transition-colors flex items-center justify-center"
                     >
-                      ×
+                      <Edit className="w-4 h-4 mr-1" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(product._id)}
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg font-medium transition-colors flex items-center justify-center"
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete
                     </button>
                   </div>
-                ))
-              ) : (
-                <div className="col-span-2 text-gray-400 text-center py-4">No images</div>
-              )}
-            </div>
-            
-            <div className="p-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1 sm:gap-0">
-                <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
-                  {product.category.replace('-', ' ')}
-                </span>
-                <span className="text-xs text-gray-500">
-                  {product.updatedAt}
-                </span>
+                </div>
               </div>
-              
-              <h3 className="text-lg font-serif font-bold text-gray-900 mb-1">
-                {product.title}
-              </h3>
-              <p className="text-gray-600 mb-2">{product.artist}</p>
-              <p className="text-lg font-bold text-amber-600 mb-4">{product.price}</p>
-              
-              <div className="flex flex-col xs:flex-row gap-2 xs:space-x-2 w-full mt-2">
-                <button
-                  onClick={() => handleEditProduct(product)}
-                  className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-2 px-3 rounded-lg font-medium transition-colors flex items-center justify-center"
-                >
-                  <Edit className="w-4 h-4 mr-1" />
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteProduct(product.id)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-                <button className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-                  <Eye className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {filteredProducts.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
-            <Search className="w-16 h-16 mx-auto" />
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No products found</h3>
-          <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+            </motion.div>
+          ))}
         </div>
       )}
     </div>

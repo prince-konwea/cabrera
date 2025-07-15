@@ -1,46 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Minus, Plus, X, ShoppingBag, ArrowLeft, Shield, Truck, Award } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../store';
+import { addToCart, removeFromCart, updateQuantity } from '../store/cartSlice';
+import CheckoutModal from '../components/CheckoutModal';
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      title: "The Starry Night Study",
-      artist: "Vincent van Gogh",
-      price: 850000,
-      quantity: 1,
-      image: "https://images.pexels.com/photos/1269968/pexels-photo-1269968.jpeg?auto=compress&cs=tinysrgb&w=400",
-      category: "Fine Art",
-      medium: "Oil on Canvas"
-    },
-    {
-      id: 2,
-      title: "Mona Lisa Study",
-      artist: "Leonardo da Vinci",
-      price: 485000,
-      quantity: 1,
-      image: "https://images.pexels.com/photos/1194775/pexels-photo-1194775.jpeg?auto=compress&cs=tinysrgb&w=400",
-      category: "Fine Art",
-      medium: "Oil on Canvas"
-    }
-  ]);
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const dispatch = useDispatch();
 
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity === 0) {
-      removeItem(id);
-      return;
+  const [isCheckoutOpen, setCheckoutOpen] = React.useState(false);
+
+  const updateQuantityHandler = (id: string, newQuantity: number) => {
+    if (newQuantity > 0) {
+      dispatch(updateQuantity({ id, quantity: newQuantity }));
     }
-    setCartItems(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
   };
 
-  const removeItem = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+  const removeItem = (id: string) => {
+    dispatch(removeFromCart(id));
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -81,6 +61,19 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-stone-50">
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        cartItems={cartItems.map(item => ({
+          id: item.id || item._id,
+          title: item.title,
+          image: item.image,
+          price: item.price,
+          quantity: item.quantity,
+          category: item.category,
+        }))}
+        total={total}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-serif font-bold text-gray-900 mb-2">Shopping Cart</h1>
@@ -92,7 +85,7 @@ const Cart = () => {
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map((item, index) => (
               <motion.div
-                key={item.id}
+                key={item.id || item._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
@@ -111,13 +104,9 @@ const Cart = () => {
                     <h3 className="text-lg font-serif font-bold text-gray-900 mb-1">
                       {item.title}
                     </h3>
-                    <p className="text-gray-600 mb-1">{item.artist}</p>
                     <div className="flex items-center space-x-2 mb-2">
                       <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
                         {item.category}
-                      </span>
-                      <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">
-                        {item.medium}
                       </span>
                     </div>
                     <p className="text-xl font-bold text-amber-600">
@@ -128,14 +117,14 @@ const Cart = () => {
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateQuantityHandler(item.id || item._id, item.quantity - 1)}
                         className="p-1 rounded-full hover:bg-gray-100 transition-colors"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
                       <span className="w-8 text-center font-medium">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantityHandler(item.id || item._id, item.quantity + 1)}
                         className="p-1 rounded-full hover:bg-gray-100 transition-colors"
                       >
                         <Plus className="w-4 h-4" />
@@ -143,7 +132,7 @@ const Cart = () => {
                     </div>
                     
                     <button
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item.id || item._id)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
                     >
                       <X className="w-5 h-5" />
@@ -180,7 +169,10 @@ const Cart = () => {
                 </div>
               </div>
 
-              <button className="w-full bg-amber-600 hover:bg-amber-700 text-white py-4 rounded-lg font-semibold transition-colors mb-4">
+              <button
+                className="w-full bg-amber-600 hover:bg-amber-700 text-white py-4 rounded-lg font-semibold transition-colors mb-4"
+                onClick={() => setCheckoutOpen(true)}
+              >
                 Proceed to Checkout
               </button>
               

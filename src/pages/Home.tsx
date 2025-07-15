@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Award, Shield, Truck, Clock } from 'lucide-react';
 import showroom1 from '../assets/showroom1.jpeg';
@@ -13,35 +13,49 @@ import antique7 from '../assets/antique (7).jpeg';
 import antique13 from '../assets/antique (13).jpeg';
 import ImageModal from '../components/ImageModal';
 import ImageWithFallback from '../components/ImageWithFallback';
+import { api } from '../utils/imageApi';
+
+const categories = [
+  { value: 'fine-art', label: 'Fine Art' },
+  { value: 'antiques', label: 'Antiques' },
+  { value: 'jewelry', label: 'Jewelry' },
+  { value: 'collectibles', label: 'Collectibles' }
+];
 
 const Home = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalAlt, setModalAlt] = useState<string | undefined>(undefined);
-
-  const handleImageClick = (image: string, alt?: string, e?: React.MouseEvent) => {
-    if (e) e.preventDefault();
-    setModalImage(image);
-    setModalAlt(alt);
-    setModalOpen(true);
-  };
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const stored = localStorage.getItem('products');
-    if (stored) setProducts(JSON.parse(stored));
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await api.get('/products');
+        setProducts(response.data);
+      } catch (err) {
+        setError('Failed to load products.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
   }, []);
 
-  // Group products by category
-  const categories = [
-    { value: 'fine-art', label: 'Fine Art' },
-    { value: 'antiques', label: 'Antiques' },
-    { value: 'jewelry', label: 'Jewelry' },
-    { value: 'collectibles', label: 'Collectibles' }
-  ];
+  // For each category, pick the first product in that category
+  const featuredByCategory = categories.map(cat => {
+    const product = products.find((p: any) => p.category === cat.value);
+    return product ? { ...product, categoryLabel: cat.label } : null;
+  }).filter(Boolean);
 
-  // Featured: show up to 6 most recent products
-  const featuredItems = products.slice(0, 6);
+  const handleImageClick = (category: string) => {
+    navigate(`/category/${category}`);
+  };
 
   const trustSignals = [
     {
@@ -67,7 +81,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-stone-50">
       <ImageModal open={modalOpen} image={modalImage || ''} alt={modalAlt} onClose={() => setModalOpen(false)} />
       {/* Hero Section */}
       <section className="relative h-[60vh] sm:h-screen flex items-center justify-center overflow-hidden">
@@ -122,53 +136,44 @@ const Home = () => {
       <section className="py-12 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10 sm:mb-16">
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-gray-900 mb-4">Featured Masterpieces</h2>
-            <p className="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto">
-              Handpicked exceptional pieces from our current collection
-            </p>
+            <h2 className="text-4xl sm:text-5xl font-serif font-bold text-gray-900 mb-4">Featured Masterpieces</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">A glimpse into our most celebrated works across categories</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {featuredItems.length === 0 ? (
-              <p className="col-span-full text-center text-gray-500">No products available yet.</p>
-            ) : (
-              featuredItems.map((item, index) => (
+          {loading ? (
+            <div className="text-center text-gray-500 text-xl py-24">Loading...</div>
+          ) : error ? (
+            <div className="text-center text-red-600 text-xl py-24">{error}</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+              {featuredByCategory.map((item: any, index: number) => (
                 <motion.div
-                  key={item.id}
+                  key={item._id || item.id || index}
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   className="group cursor-pointer"
+                  onClick={() => handleImageClick(item.category)}
                 >
-                  <Link to={`/product/${item.id}`}>
-                    <div
-                      onClick={(e: React.MouseEvent<HTMLDivElement>) => {
-                        e.preventDefault();
-                        handleImageClick(item.images?.[0] || photo1, item.title, e);
-                      }}
-                      className="relative overflow-hidden rounded-lg bg-gray-100 mb-4 cursor-zoom-in"
-                    >
-                      <ImageWithFallback
-                        src={item.images?.[0] || photo1}
-                        alt={item.title}
-                        className="w-full h-56 sm:h-80 object-cover group-hover:scale-105 transition-transform duration-500"
-                        fallbackText={`${item.category || 'Product'} Image`}
-                      />
-                      <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-amber-600 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
-                        {categories.find(c => c.value === item.category)?.label || item.category}
-                      </div>
+                  <div className="relative overflow-hidden rounded-lg bg-gray-100 mb-4 cursor-zoom-in">
+                    <ImageWithFallback
+                      src={item.imageUrls?.[0]}
+                      alt={item.title}
+                      className="w-full h-56 sm:h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+                      fallbackText={`${item.categoryLabel} Image`}
+                    />
+                    <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-amber-600 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                      {item.categoryLabel}
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="text-lg sm:text-xl font-serif font-bold text-gray-900 group-hover:text-amber-600 transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="text-gray-600">{item.artist}</p>
-                      <p className="text-xl sm:text-2xl font-bold text-amber-600">{item.price}</p>
-                    </div>
-                  </Link>
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-lg sm:text-xl font-serif font-bold text-gray-900 group-hover:text-amber-600 transition-colors">
+                      {item.title}
+                    </h3>
+                  </div>
                 </motion.div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -183,12 +188,14 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
-              { value: 'fine-art', label: 'Fine Art', image: photo1 },
-              { value: 'antiques', label: 'Antiques', image: antique1 },
-              { value: 'jewelry', label: 'Jewelry', image: antique7 },
-              { value: 'collectibles', label: 'Collectibles', image: antique13 }
+              { value: 'fine-art', label: 'Fine Art', fallbackImage: photo1 },
+              { value: 'antiques', label: 'Antiques', fallbackImage: antique1 },
+              { value: 'jewelry', label: 'Jewelry', fallbackImage: antique7 },
+              { value: 'collectibles', label: 'Collectibles', fallbackImage: antique13 }
             ].map((category, index) => {
               const catProducts = products.filter(p => p.category === category.value);
+              // Use the first product's image from backend if available, else fallback
+              const backendImage = catProducts[0]?.imageUrls?.[0] || category.fallbackImage;
               return (
                 <motion.div
                   key={category.value}
@@ -204,12 +211,12 @@ const Home = () => {
                       <div
                         onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                           e.preventDefault();
-                          handleImageClick(category.image, category.label, e);
+                          handleImageClick(category.value);
                         }}
                         className="aspect-w-3 aspect-h-4 relative cursor-zoom-in"
                       >
                         <ImageWithFallback
-                          src={category.image}
+                          src={backendImage}
                           alt={category.label}
                           className="w-full h-48 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                           fallbackText={`${category.label} Category`}

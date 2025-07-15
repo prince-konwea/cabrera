@@ -13,10 +13,13 @@ import Wishlist from './pages/Wishlist';
 import NotFound from './pages/NotFound';
 import Admin from './pages/Admin';
 import AdminLayout from './components/layout/AdminLayout';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <Router>
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
       <Routes>
         <Route path="/admin" element={<AdminLayout><Admin /></AdminLayout>} />
         <Route path="/" element={<Layout />}>

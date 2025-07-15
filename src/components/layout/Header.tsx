@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, User, Heart, ShoppingBag, Menu, X, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const cartCount = useSelector((state: RootState) => state.cart.items.length);
+  const wishlistCount = useSelector((state: RootState) => state.wishlist.items.length);
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -71,13 +75,13 @@ const Header = () => {
             <Link to="/wishlist" className="p-2 text-gray-700 hover:text-amber-600 transition-colors relative">
               <Heart className="w-5 h-5" />
               <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                2
+                {wishlistCount}
               </span>
             </Link>
             <Link to="/cart" className="p-2 text-gray-700 hover:text-amber-600 transition-colors relative">
               <ShoppingBag className="w-5 h-5" />
               <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                1
+                {cartCount}
               </span>
             </Link>
           </div>
@@ -99,13 +103,13 @@ const Header = () => {
               <Link to="/wishlist" className="p-2 text-gray-700 hover:text-amber-600 transition-colors relative">
                 <Heart className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  2
+                  {wishlistCount}
                 </span>
               </Link>
               <Link to="/cart" className="p-2 text-gray-700 hover:text-amber-600 transition-colors relative">
                 <ShoppingBag className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  1
+                  {cartCount}
                 </span>
               </Link>
 
